@@ -1,0 +1,23 @@
+spring:
+  flyway:
+    enabled: true
+    url: jdbc:mysql://localhost:3306/store
+    user: root
+    password: Sachiesh.13
+  application:
+    name: store
+  datasource:
+    url: jdbc:mysql://localhost:3306/store
+    username: root
+    password: Sachiesh.13
+  jpa:
+    show-sql: true
+stripe:
+  apiUrl: https://api.stripe.com
+server:
+  port: 3000
+payment-gateway: stripe
+logging:
+  level:
+    org:
+      flywaydb: DEBUG
