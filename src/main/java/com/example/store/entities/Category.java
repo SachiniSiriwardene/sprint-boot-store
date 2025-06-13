@@ -3,21 +3,20 @@ package com.example.store.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-@Entity
-@Table(name = "categories")
 @Getter
 @Setter
 @Builder
-@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "categories")
 public class Category {
-
-    @Column(name = "id")
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Byte id;
 
     @Column(name = "name")
