@@ -19,12 +19,8 @@ public class StoreApplication {
 		ApplicationContext context  = SpringApplication.run(StoreApplication.class, args);
 		var service =  context.getBean(UserService.class);
 		var productService = context.getBean(ProductService.class);
-		productService.deleteProduct();
-//		productService.addProduct();
-		//service.addToWishList();
-		//service.showRelatedEntities();
-		//service.deleteRelated();
-		//service.showEntityStates();
+		service.fetchProductsByCriteria();
+
 //		var orderService = context.getBean(OrderService.class);
 //		orderService.placeOrder();
 

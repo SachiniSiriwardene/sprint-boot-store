@@ -1,15 +1,21 @@
 package com.example.store.services;
 
 import com.example.store.entities.Address;
+import com.example.store.entities.Category;
 import com.example.store.entities.Product;
 import com.example.store.entities.User;
 import com.example.store.repositories.AddressRepository;
 import com.example.store.repositories.ProfileRepository;
 import com.example.store.repositories.UserRepository;
+import com.example.store.repositories.specifications.ProductSpec;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 @Service
@@ -90,5 +96,89 @@ public class UserService {
         var products = productRepository.findAll();
         products.forEach(user::addFavoriteProduct);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateProductPrices() {
+        productRepository.updatePriceByCategory(BigDecimal.valueOf(10), (byte) 1);
+    }
+
+    public void fetchProducts() {
+        var products = productRepository.findByCategory(new Category((byte)1));
+        products.forEach(System.out::println);
+    }
+
+    @Transactional
+    public void fetchProduct() {
+        var products = productRepository.findProduct(BigDecimal.valueOf(1), BigDecimal.valueOf(1200));
+        products.forEach(System.out::println);
+    }
+
+    @Transactional
+    public void fetchSampleProducts() {
+       var product = new Product();
+       product.setName("product");
+       var matcher = ExampleMatcher.matching()
+               .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+       var example = Example.of(product, matcher);
+       var products = productRepository.findAll(example);
+       products.forEach(System.out::println);
+    }
+
+    @Transactional
+    public void fetchProductsByCriteria() {
+        var products = productRepository.findProductsByCriteria(null, BigDecimal.valueOf(1),
+                BigDecimal.valueOf(10), null);
+        products.forEach(System.out::println);
+    }
+
+    @Transactional
+    public void fetchProductsBySpecifications(String name, BigDecimal minPrice, BigDecimal maxPrice) {
+        Specification<Product> spec = Specification.where(null);
+
+        if (name != null) {
+            spec = spec.and(ProductSpec.hasName(name));
+        }
+        if (minPrice != null) {
+            spec = spec.and(ProductSpec.hasPriceGreaterThanOrEqualTo(minPrice));
+        }
+        if (maxPrice != null) {
+            spec = spec.and(ProductSpec.hasPriceLessThanOrEqualTo(maxPrice));
+        }
+
+        var products = productRepository.findAll(spec);
+        products.forEach(System.out::println);
+    }
+
+    public void fetchSortedProducts() {
+       var sort =  Sort.by("name").and(
+                Sort.by("price").descending()
+        );
+        productRepository.findAll(sort).forEach(System.out::println);
+    }
+
+    public void fetchPaginatedProducts(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Product> pages = productRepository.findAll(pageRequest);
+        var products  = pages.getContent();
+        products.forEach(System.out::println);
+    }
+
+    @Transactional
+    public void fetchUsers() {
+        var users = userRepository.findAllWithTags();
+        users.forEach(u -> {
+            System.out.println(u);
+            u.getAddresses().forEach(System.out::println);
+        });
+    }
+
+    @Transactional
+    public void findProfiles() {
+        var profiles = profileRepository.findUserProfiles(2);
+        profiles.forEach(profile ->
+                System.out.println(profile.getId() + ": "+ profile.getEmail())
+
+        );
     }
 }
